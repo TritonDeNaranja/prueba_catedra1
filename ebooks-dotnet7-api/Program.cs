@@ -22,15 +22,20 @@ ebooks.MapDelete("/ebook/{id}",DeleteEBook);
 app.Run();
 
 // TODO: Add more methods
-async Task<IResult> CreateEBookAsync(DataContext context)
+async Task<IResult> CreateEBookAsync(EBook ebook, DataContext db)
 {
-    return Results.Ok();
+    db.EBooks.Add(ebook);
+    await db.SaveChangesAsync();
+    return TypedResults.Created($"/todoitems/{ebook.Id}", ebook);
+
 }
 
-async Task GetAllAvailable(HttpContext context)
+async Task<IResult> GetAllAvailable(DataContext db)
 {
-    throw new NotImplementedException();
+    return TypedResults.Ok(await db.EBooks.Where(t => t.IsAvailable).ToListAsync());
 }
+
+
 
 async Task UpdateBook(HttpContext context)
 {
